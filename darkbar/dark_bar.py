@@ -273,3 +273,17 @@ def wrap_widget_unreal(widget: QWidget) -> FramelessWindowUnreal:
     window = FramelessWindowUnreal()
     window.wrap_widget(widget)
     return window
+
+# demo code
+if __name__ == "__main__":
+    import sys
+    from PySide2 import QtWidgets
+
+    app = QtWidgets.QApplication(sys.argv)
+    window = FramelessWindow()
+    window.setWindowTitle("Frameless Window")
+    window.setWindowIcon(QtGui.QIcon("icon.png"))
+    window.setCentralWidget(QtWidgets.QPushButton("Hello World"))
+
+    window.show()
+    sys.exit(app.exec_())
