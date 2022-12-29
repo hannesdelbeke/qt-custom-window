@@ -203,7 +203,7 @@ class FramelessWindow(QWidget):
 
         # use CustomizeWindowHint when you want to support resizing
         self.layout().setContentsMargins(0, 0, 0, 0)
-        self.setWindowFlags(Qt.Tool | Qt.CustomizeWindowHint)
+        self.setWindowFlags()
         # otherwise use MSWindowsFixedSizeDialogHint
         # self.setWindowFlags(Qt.Tool | Qt.MSWindowsFixedSizeDialogHint)
         # self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
@@ -238,8 +238,16 @@ class FramelessWindow(QWidget):
         super().setWindowFlag(arg__1, on)
         self._process_flags()
 
-    def setWindowFlags(self, type:QtCore.Qt.WindowFlags) -> None:
+    def setWindowFlags(self, type:QtCore.Qt.WindowFlags = None) -> None:
+        # pass window flags to the qt winodw as usual.
+        # however when we say frameless window, hide both default and custom title bars
+        # when we don't say frameless window, we only want to hide the qt default title bar but not our custom one
         super().setWindowFlags(Qt.Window | Qt.CustomizeWindowHint)
+        if not type:  # allows to init the window with no flags
+            return
+
+        # e.g. QtCore.Qt.WindowCloseButtonHint |
+        # todo filter out the no bar flags: Qt.CustomizeWindowHint
         self.title_bar.setWindowFlags(type)
 
     def wrap_widget(self, widget):
