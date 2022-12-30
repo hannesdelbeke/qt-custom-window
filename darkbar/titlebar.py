@@ -7,12 +7,14 @@ class DarkBar(QWidget):
     """A custom dark title bar for a window, meant to replace the default windows titlebar"""
     # note QWidget functions don't use camelCase, don't change this
 
-    def __init__(self, parent, title="", height=35, *args, **kwargs):
+    def __init__(self, parent, title=None, height=35, *args, **kwargs):
         """
         Args:
             parent (QWidget): The parent widget
             title (str): The title of the window
         """
+
+        title = title or ""
         super().__init__(parent, *args, **kwargs)
         # self.parent = parent
 
