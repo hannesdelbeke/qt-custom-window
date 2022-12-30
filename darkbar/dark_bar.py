@@ -27,7 +27,7 @@ class DarkBar(QWidget):
         self._height = height
 
         self.layout = QHBoxLayout()
-        self.title = QLabel()
+        self.title = QLabel()  # believe this is a dummy to store the icon layout
         self.icon_layout = QHBoxLayout()
 
         self.btn_icon = QPushButton("♥")
@@ -124,25 +124,54 @@ class DarkBar(QWidget):
     def minimize_parent(self):
         self.parent.showMinimized()
 
-    def setWindowFlags(self, type):
-        super().setWindowFlags(type)
+    # def setWindowFlags() # this wont work correctly
+        # TODO implement this
 
-        print("setWindowFlags", type)
+    def setWindowFlags(self, flags):
+        """
+        WindowTitleHint:             show title
+        WindowSystemMenuHint:        show icon
+        WindowMinimizeButtonHint:    show minimize 🗕 button
+        WindowMaximizeButtonHint:    show maximize 🗖🗗 buttons
+        WindowCloseButtonHint:       show close 🗙 button
+        WindowContextHelpButtonHint: show help ? button
+
+        e.g. widget.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowMaximizeButtonHint)
+        """
         # see https://doc.qt.io/qt-6/qt.html#WindowType-enum
-        # hide buttons if tool window
-        self.btn_minimize.setVisible(not type & QtCore.Qt.Tool)
-        self.btn_maximize.setVisible(not type & QtCore.Qt.Tool)
 
-        print("flags:", type)
-        print(self.windowFlags())
+        show_title = False
+        show_minim = False
+        show_maxim = False
+        show_close = False
+        show_help = False
+        show_sys_hint = False  # icon
+
+        # hide all buttons if tool window, except title, title_text, and close button
+        show_close = flags & QtCore.Qt.Tool
+
+        # TODO frameless hides this. don't pass other flags to this
+        # self.title.setVisible(not flags & QtCore.Qt.CustomizeWindowHint)
+
+        # set all to false, unless their flag is given
+        # customise title bar overrides tool window, so run this after tool window logic
+        if flags & QtCore.Qt.CustomizeWindowHint:
+
+            show_title = flags & QtCore.Qt.WindowTitleHint
+            show_minim = flags & QtCore.Qt.WindowMinimizeButtonHint
+            show_maxim = flags & QtCore.Qt.WindowMaximizeButtonHint
+            show_close = flags & QtCore.Qt.WindowCloseButtonHint
+            show_sys_hint = flags & QtCore.Qt.WindowSystemMenuHint
+
+        self.title_text.setVisible(True)
+        self.title.setVisible(show_close or show_maxim or show_minim or show_title or show_sys_hint)
+        self.btn_minimize.setVisible(show_minim)
+        self.btn_maximize.setVisible(show_maxim)
+        self.btn_close.setVisible(show_close)
+        self.btn_icon.setVisible(show_sys_hint)
 
         # TODO add support for
-        # Qt.WindowMinimizeButtonHint
-        # Qt.WindowMaximizeButtonHint
-        # Qt.WindowCloseButtonHint
         # Qt.WindowContextHelpButtonHint
-        # Qt.WindowTitleHint
-        # Qt.WindowSystemMenuHint
 
 
 
@@ -234,21 +263,23 @@ class FramelessWindow(QWidget):
     def windowIcon(self) -> QtGui.QIcon:
         return self.title_bar.btn_icon.icon()
 
-    def setWindowFlag(self, arg__1:QtCore.Qt.WindowType, on=True) -> None:
-        super().setWindowFlag(arg__1, on)
-        self._process_flags()
+    # def setWindowFlag(self, arg__1:QtCore.Qt.WindowType, on=True) -> None:
+    #     super().setWindowFlag(arg__1, on)
+    # TODO if flags affect title bar pass along to title bar
+    #     self._process_flags()
 
-    def setWindowFlags(self, type:QtCore.Qt.WindowFlags = None) -> None:
+    def setWindowFlags(self, flags:QtCore.Qt.WindowFlags = None) -> None:
         # pass window flags to the qt winodw as usual.
         # however when we say frameless window, hide both default and custom title bars
         # when we don't say frameless window, we only want to hide the qt default title bar but not our custom one
         super().setWindowFlags(Qt.Window | Qt.CustomizeWindowHint)
-        if not type:  # allows to init the window with no flags
+        # todo pass non title bar flags to super, e.g. Qt.WindowStaysOnTopHint
+
+        if not flags:  # allows to init the window with no flags
             return
 
-        # e.g. QtCore.Qt.WindowCloseButtonHint |
         # todo filter out the no bar flags: Qt.CustomizeWindowHint
-        self.title_bar.setWindowFlags(type)
+        self.title_bar.setWindowFlags(flags)
 
     def wrap_widget(self, widget):
         """set central widget and copy over settings from widget"""
@@ -274,16 +305,32 @@ def wrap_widget_unreal(widget: QWidget) -> FramelessWindowUnreal:
     window.wrap_widget(widget)
     return window
 
+
 # demo code
 if __name__ == "__main__":
     import sys
     from PySide2 import QtWidgets
 
+    flags = Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowMinimizeButtonHint | Qt.WindowSystemMenuHint
+    flags2 = flags
+
     app = QtWidgets.QApplication(sys.argv)
     window = FramelessWindow()
-    window.setWindowTitle("Frameless Window")
+    window.setWindowTitle("    Frameless Window")  # todo when no title provided, use default title from window
     window.setWindowIcon(QtGui.QIcon("icon.png"))
     window.setCentralWidget(QtWidgets.QPushButton("Hello World"))
-
+    window.setWindowFlags(flags)
+    window.setWindowFlags(flags2)
     window.show()
+
+    # create a second default qt window
+    window2 = QtWidgets.QMainWindow()
+    window2.setWindowTitle("Default Window")
+    window2.setWindowIcon(QtGui.QIcon("icon.png"))
+    window2.setWindowFlags(flags)
+    window2.setWindowFlags(flags2)
+    window2.show()
+
     sys.exit(app.exec_())
+
+    # todo implement Qt.WindowSystemMenuHint dropdown menu when clicking on the icon
