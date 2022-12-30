@@ -1,10 +1,8 @@
-from PySide2 import QtCore
-import PySide2.QtGui as QtGui
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import QVBoxLayout
-from PySide2.QtWidgets import QWidget
-
 from darkbar.titlebar import TitleBar
+from darkbar.qt_manager import QtCore, QtGui, QtWidgets
+Qt = QtCore.Qt
+QVBoxLayout = QtWidgets.QVBoxLayout
+QWidget = QtWidgets.QWidget
 
 
 class FramelessWindow(QWidget):

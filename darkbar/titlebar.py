@@ -1,6 +1,9 @@
-from PySide2 import QtCore
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
+from darkbar.qt_manager import QtCore, QtWidgets
+Qt = QtCore.Qt
+QWidget = QtWidgets.QWidget
+QHBoxLayout = QtWidgets.QHBoxLayout
+QLabel = QtWidgets.QLabel
+QPushButton = QtWidgets.QPushButton
 
 
 class TitleBar(QWidget):

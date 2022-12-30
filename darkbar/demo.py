@@ -1,9 +1,7 @@
 import sys
-import PySide2.QtGui as QtGui
-from PySide2.QtCore import Qt
-from PySide2 import QtWidgets
-import sys
 from darkbar.window import FramelessWindow
+from darkbar.qt_manager import QtGui, QtCore, QtWidgets
+Qt = QtCore.Qt
 
 
 # demo code

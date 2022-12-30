@@ -1,10 +1,8 @@
 from pathlib import Path
-
-from PySide2 import QtGui as QtGui, QtCore
-from PySide2.QtWidgets import QWidget
-
 from darkbar.window import FramelessWindow
 from darkbar.titlebar import TitleBar
+from darkbar.qt_manager import QtGui, QtCore, QtWidgets
+QWidget = QtWidgets.QWidget
 
 
 class TitleBarUnreal(TitleBar):
