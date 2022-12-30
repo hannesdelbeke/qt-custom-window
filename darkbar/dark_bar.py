@@ -300,22 +300,18 @@ class FramelessWindow(QWidget):
         return self.title_bar.btn_icon.icon()
 
     def setWindowFlag(self, arg__1:QtCore.Qt.WindowType, on=True) -> None:
-        super().setWindowFlag(arg__1, on)
-    # TODO if flags affect title bar pass along to title bar
-    #     self._process_flags()
+        flags = self.windowFlags()
+        if on:
+            flags |= arg__1
+        else:
+            flags &= ~arg__1
+        self.setWindowFlags(flags)
 
     def setWindowFlags(self, flags:QtCore.Qt.WindowFlags) -> None:
         # pass window flags to the qt winodw as usual.
         # however when we say frameless window, hide both default and custom title bars
         # when we don't say frameless window, we only want to hide the qt default title bar but not our custom one
 
-        # filter following flags
-        # WindowTitleHint:             show title
-        # WindowSystemMenuHint:        show icon
-        # WindowMinimizeButtonHint:    show minimize 🗕 button
-        # WindowMaximizeButtonHint:    show maximize 🗖🗗 buttons
-        # WindowCloseButtonHint:       show close 🗙 button
-        # WindowContextHelpButtonHint: show help ? button
         flags_to_filter = (
             QtCore.Qt.CustomizeWindowHint,
             QtCore.Qt.WindowTitleHint,
