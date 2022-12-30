@@ -166,16 +166,21 @@ class DarkBar(QWidget):
         # default values
         show_title_bar = True
         show_close = True
-        show_minim = False
-        show_maxim = False
+        show_minim = True
+        show_maxim = True
         show_help = False
-        show_sys_hint = False  # icon
+        show_sys_hint = True  # icon
         full_screen = flags & Qt.WindowFullScreen
+        frameless = flags & Qt.FramelessWindowHint
 
-        # if flags & QtCore.Qt.Tool:
+        # todo this doesn't work correctly, activates when tool flag is not set
+        # if flags & Qt.Tool:
         #     # hide all buttons if tool window, except title, title_text, and close button
         #     show_close = True
-
+        #     show_minim = False
+        #     show_maxim = False
+        #     show_help = False
+        #     show_sys_hint = False
 
         # TODO frameless hides this. don't pass other flags to this
         # self.title.setVisible(not flags & QtCore.Qt.CustomizeWindowHint)
@@ -183,14 +188,13 @@ class DarkBar(QWidget):
         # set all to false, unless their flag is given
         # customise title bar overrides tool window, so run this after tool window logic
         if flags & QtCore.Qt.CustomizeWindowHint:
-
             show_title_bar = flags & QtCore.Qt.WindowTitleHint
             show_minim = flags & QtCore.Qt.WindowMinimizeButtonHint
             show_maxim = flags & QtCore.Qt.WindowMaximizeButtonHint
             show_close = flags & QtCore.Qt.WindowCloseButtonHint
             show_sys_hint = flags & QtCore.Qt.WindowSystemMenuHint
 
-        self.title.setVisible(not full_screen and (show_close or show_maxim or show_minim or show_title_bar or show_sys_hint))
+        self.title.setVisible(not full_screen and not frameless and (show_close or show_maxim or show_minim or show_title_bar or show_sys_hint))
         self.title_text.setVisible(True)
         self.btn_minimize.setVisible(show_minim)
         self.btn_maximize.setVisible(show_maxim)
@@ -260,7 +264,7 @@ class FramelessWindow(QWidget):
         layout.addLayout(self.content_layout)
         layout.addStretch(-1)  # so the bar stays at top when scaling the window
 
-        self._flags = super().windowFlags()
+        self._flags = Qt.Widget  # super().windowFlags()
         self.setWindowFlags(self._flags)
 
         # use CustomizeWindowHint when you want to support resizing
@@ -312,6 +316,8 @@ class FramelessWindow(QWidget):
         # however when we say frameless window, hide both default and custom title bars
         # when we don't say frameless window, we only want to hide the qt default title bar but not our custom one
 
+        self.title_bar.setWindowFlags(flags)
+
         flags_to_filter = (
             QtCore.Qt.CustomizeWindowHint,
             QtCore.Qt.WindowTitleHint,
@@ -320,20 +326,21 @@ class FramelessWindow(QWidget):
             QtCore.Qt.WindowMaximizeButtonHint,
             QtCore.Qt.WindowCloseButtonHint,
             QtCore.Qt.WindowContextHelpButtonHint,
+            QtCore.Qt.FramelessWindowHint,
+            # QtCore.Qt.WindowFullScreen, # todo if windows fullscreen dont filter out
         )
 
-        filtered_flags = 0b10000000
+        # filtered_flags = 0b00000000
         for flag in flags_to_filter:
             if flags & flag:
-                filtered_flags |= flag  # add flag to filtered flags
+                # filtered_flags |= flag  # add flag to filtered flags
                 flags ^= flag  # remove flag from flags
 
         if not self.show_original_title_bar:
-            flags |= QtCore.Qt.CustomizeWindowHint
+            flags |= QtCore.Qt.FramelessWindowHint #CustomizeWindowHint
 
         super().setWindowFlags(flags)
 
-        self.title_bar.setWindowFlags(filtered_flags)
         self._flags = flags
 
     def windowFlags(self):
@@ -545,7 +552,6 @@ class FramelessWindow(QWidget):
 
 
 
-
 # ============
 
 class FramelessWindowUnreal(FramelessWindow):
@@ -564,7 +570,7 @@ def wrap_widget_unreal(widget: QWidget) -> FramelessWindowUnreal:
 if __name__ == "__main__":
     import sys
     from PySide2 import QtWidgets
-    flags = Qt.Window | Qt.FramelessWindowHint
+    flags = Qt.Window
             #| Qt.WindowStaysOnTopHint works
     flags2 = flags
 
@@ -575,16 +581,21 @@ if __name__ == "__main__":
     w1.setCentralWidget(QtWidgets.QPushButton("Hello World"))
     w1.setWindowFlags(flags)
     w1.setWindowFlags(flags2)
+    # set pos
+    w1.move(100, 100)
     w1.show()
 
-    # # create a second default qt window
-    # w2 = QtWidgets.QMainWindow()
-    # w2.setWindowTitle("Default Window")
-    # w2.setWindowIcon(QtGui.QIcon("icon.png"))
-    # w2.setWindowFlags(flags)
+    # create a second default qt window
+    w2 = QtWidgets.QWidget()
+    w2.setWindowTitle("Default Window")
+    w2.setWindowIcon(QtGui.QIcon("icon.png"))
+    w2.setWindowFlags(flags)
     # w2.setWindowFlags(flags2)
-    # w2.show()
+    w2.show()
 
+    print(hex((w1.windowFlags())))
+    print(hex(int(flags)))
+    print(hex(int(Qt.Window)))
 
     sys.exit(app.exec_())
 
