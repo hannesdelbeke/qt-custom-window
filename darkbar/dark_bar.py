@@ -60,6 +60,10 @@ class DarkBar(QWidget):
         self.start = QPoint(0, 0)
         self.pressing = False
 
+    @property
+    def height(self):
+        return self._height
+
     def _connect_buttons(self):
         self.btn_close.clicked.connect(self.close_parent)
         self.btn_minimize.clicked.connect(self.minimize_parent)
@@ -256,9 +260,9 @@ class FramelessWindow(QWidget):
         return self.title_bar.title_text.text()
 
     def setWindowIcon(self, icon: QtGui.QIcon) -> None:
+        size = self.title_bar.height * .5
         self.title_bar.btn_icon.setIcon(icon)
-        self.title_bar.btn_icon.setIconSize(QtCore.QSize(self.title_bar._height * .5,
-                                                                 self.title_bar._height * .5))
+        self.title_bar.btn_icon.setIconSize(QtCore.QSize(size, size))
 
     def windowIcon(self) -> QtGui.QIcon:
         return self.title_bar.btn_icon.icon()
@@ -289,8 +293,8 @@ class FramelessWindow(QWidget):
         # copy over settings from widget
         self.setWindowTitle(widget.windowTitle())
         self.setWindowIcon(widget.windowIcon())
-        self.resize(widget.size())
         self.setWindowFlags(widget.windowFlags())
+        self.resize(widget.size())
         # self.move(widget.pos())
 
 
