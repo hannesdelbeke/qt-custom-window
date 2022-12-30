@@ -173,17 +173,16 @@ class DarkBar(QWidget):
         full_screen = flags & Qt.WindowFullScreen
         frameless = flags & Qt.FramelessWindowHint
 
-        # todo this doesn't work correctly, activates when tool flag is not set
-        # if flags & Qt.Tool:
-        #     # hide all buttons if tool window, except title, title_text, and close button
-        #     show_close = True
-        #     show_minim = False
-        #     show_maxim = False
-        #     show_help = False
-        #     show_sys_hint = False
-
-        # TODO frameless hides this. don't pass other flags to this
-        # self.title.setVisible(not flags & QtCore.Qt.CustomizeWindowHint)
+        # popup and dialog flags form a tool window together
+        # otherwise Qt.Window triggers the Qt.Tool flag
+        is_tool_window = bool(flags & 0x00000008) and bool(flags & 0x00000002)
+        if is_tool_window:
+            # hide all buttons if tool window, except title, title_text, and close button
+            show_close = True
+            show_minim = False
+            show_maxim = False
+            show_help = False
+            show_sys_hint = False
 
         # set all to false, unless their flag is given
         # customise title bar overrides tool window, so run this after tool window logic
@@ -193,16 +192,16 @@ class DarkBar(QWidget):
             show_maxim = flags & QtCore.Qt.WindowMaximizeButtonHint
             show_close = flags & QtCore.Qt.WindowCloseButtonHint
             show_sys_hint = flags & QtCore.Qt.WindowSystemMenuHint
+            show_help = flags & QtCore.Qt.WindowContextHelpButtonHint
 
-        self.title.setVisible(not full_screen and not frameless and (show_close or show_maxim or show_minim or show_title_bar or show_sys_hint))
-        self.title_text.setVisible(True)
+        self.title.setVisible(not full_screen and not frameless and
+                              (show_close or show_maxim or show_minim or show_title_bar or show_sys_hint or show_help))
+        self.title_text.setVisible(show_title_bar)
         self.btn_minimize.setVisible(show_minim)
         self.btn_maximize.setVisible(show_maxim)
         self.btn_close.setVisible(show_close)
         self.btn_icon.setVisible(show_sys_hint)
-
-        # TODO add support for
-        # Qt.WindowContextHelpButtonHint
+        self.btn_help.setVisible(show_help)
 
 
 
@@ -570,7 +569,7 @@ def wrap_widget_unreal(widget: QWidget) -> FramelessWindowUnreal:
 if __name__ == "__main__":
     import sys
     from PySide2 import QtWidgets
-    flags = Qt.Window
+    flags = Qt.Tool
             #| Qt.WindowStaysOnTopHint works
     flags2 = flags
 
@@ -580,7 +579,7 @@ if __name__ == "__main__":
     w1.setWindowIcon(QtGui.QIcon("icon.png"))
     w1.setCentralWidget(QtWidgets.QPushButton("Hello World"))
     w1.setWindowFlags(flags)
-    w1.setWindowFlags(flags2)
+    # w1.setWindowFlags(flags2)
     # set pos
     w1.move(100, 100)
     w1.show()
@@ -592,10 +591,6 @@ if __name__ == "__main__":
     w2.setWindowFlags(flags)
     # w2.setWindowFlags(flags2)
     w2.show()
-
-    print(hex((w1.windowFlags())))
-    print(hex(int(flags)))
-    print(hex(int(Qt.Window)))
 
     sys.exit(app.exec_())
 
