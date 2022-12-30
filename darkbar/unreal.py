@@ -4,10 +4,10 @@ from PySide2 import QtGui as QtGui, QtCore
 from PySide2.QtWidgets import QWidget
 
 from darkbar.window import FramelessWindow
-from darkbar.titlebar import DarkBar
+from darkbar.titlebar import TitleBar
 
 
-class DarkBarUnreal(DarkBar):
+class TitleBarUnreal(TitleBar):
     def __init__(self, parent, title="", height=35, *args, **kwargs):
         super().__init__(parent, title, height, *args, **kwargs)
         self._style_buttons_svg()
@@ -37,7 +37,7 @@ class DarkBarUnreal(DarkBar):
 
 
 class FramelessWindowUnreal(FramelessWindow):
-    default_title_bar = DarkBarUnreal
+    default_title_bar = TitleBarUnreal
 
 
 def wrap_widget_unreal(widget: QWidget) -> FramelessWindowUnreal:

@@ -4,7 +4,7 @@ from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QVBoxLayout
 from PySide2.QtWidgets import QWidget
 
-from darkbar.titlebar import DarkBar
+from darkbar.titlebar import TitleBar
 
 
 class FramelessWindow(QWidget):
@@ -13,7 +13,7 @@ class FramelessWindow(QWidget):
     Devs can add their own widgets to self.content_layout
     """
 
-    default_title_bar = DarkBar
+    default_title_bar = TitleBar
 
     def __init__(self, parent=None, title="", title_bar=None, *args, **kwargs):
         """

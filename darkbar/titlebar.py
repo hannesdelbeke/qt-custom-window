@@ -3,7 +3,7 @@ from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
 
 
-class DarkBar(QWidget):
+class TitleBar(QWidget):
     """A custom dark title bar for a window, meant to replace the default windows titlebar"""
     # note QWidget functions don't use camelCase, don't change this
 
