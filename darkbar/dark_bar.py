@@ -21,21 +21,29 @@ class DarkBar(QWidget):
             parent (QWidget): The parent widget
             title (str): The title of the window
         """
-        super(DarkBar, self).__init__(*args, **kwargs)
-        self.parent = parent
+        super().__init__(parent, *args, **kwargs)
+        # self.parent = parent
+
+        self.setMouseTracking(True)
+        # self.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
 
         self._height = height
 
         self.layout = QHBoxLayout()
         self.title = QLabel()  # believe this is a dummy to store the icon layout
+
+        self.title.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
+
+
         self.icon_layout = QHBoxLayout()
 
         self.btn_icon = QPushButton("♥")
         self.title_text = QLabel("   " + title)  # hack, add space instead of margin
         self.btn_close = QPushButton("🗙")
+        self.btn_help = QPushButton("?")
         self.btn_minimize = QPushButton("🗕")
         self.btn_maximize = QPushButton("🗖")
-        self.btn_restore = QPushButton("🗗", )
+        self.btn_restore = QPushButton("🗗")
         self.btn_restore.setVisible(False)
 
         # self._style_buttons_svg()
@@ -48,6 +56,7 @@ class DarkBar(QWidget):
         self.icon_layout.addWidget(self.btn_icon)
         self.icon_layout.addWidget(self.title_text)
         self.icon_layout.addStretch(-1)
+        self.icon_layout.addWidget(self.btn_help)
         self.icon_layout.addWidget(self.btn_minimize)
         self.icon_layout.addWidget(self.btn_maximize)
         self.icon_layout.addWidget(self.btn_restore)
@@ -57,8 +66,8 @@ class DarkBar(QWidget):
         self.setLayout(self.layout)
 
         # init mouse tracking
-        self.start = QPoint(0, 0)
-        self.pressing = False
+        # self.start = QPoint(0, 0)
+        # self.pressing = False
 
     @property
     def height(self):
@@ -98,18 +107,28 @@ class DarkBar(QWidget):
         self.title.setStyleSheet(f"""background-color: {ue_grey};""")
         self.title_text.setStyleSheet(f"""color: {ue_grey_white};""")
 
+    def mousePressEvent(self, e):
+        parent = self.parent()
+        if e.button() == Qt.LeftButton:
+            if parent._resizing:
+                parent._resize()
+            else:
+                parent._move()
+        parent.mousePressEvent(e)
+        return super().mousePressEvent(e)
 
-    # resizing is not implemented
-    # def resizeEvent(self, QResizeEvent):
-    #     super(MyBar, self).resizeEvent(QResizeEvent)
-    #     self.title.setFixedWidth(self.parent.width())
+    # def mouseDoubleClickEvent(self, e):  # todo test
+    #     self.parent().mouseDoubleClickEvent(e)
+    #     return super().mouseDoubleClickEvent(e)
 
-    def mousePressEvent(self, event):
-        self.start = self.mapToGlobal(event.pos())
-        self.pressing = True
+    def mouseMoveEvent(self, e):
+        self.parent().mouseMoveEvent(e)
+        return super().mouseMoveEvent(e)
 
-        window = self.parent.windowHandle()
-        window.startSystemMove()
+    # prevent accumulated cursor shape bug
+    def enterEvent(self, e):
+        self.parent().enterEvent(e)
+        return super().enterEvent(e)
 
     def close_parent(self):
         self.parent.close()
@@ -144,16 +163,19 @@ class DarkBar(QWidget):
         """
         # see https://doc.qt.io/qt-6/qt.html#WindowType-enum
 
-        show_title = False
+        # default values
+        show_title_bar = True
+        show_close = True
         show_minim = False
         show_maxim = False
-        show_close = False
         show_help = False
         show_sys_hint = False  # icon
         full_screen = flags & Qt.WindowFullScreen
 
-        # hide all buttons if tool window, except title, title_text, and close button
-        show_close = flags & QtCore.Qt.Tool
+        # if flags & QtCore.Qt.Tool:
+        #     # hide all buttons if tool window, except title, title_text, and close button
+        #     show_close = True
+
 
         # TODO frameless hides this. don't pass other flags to this
         # self.title.setVisible(not flags & QtCore.Qt.CustomizeWindowHint)
@@ -162,13 +184,13 @@ class DarkBar(QWidget):
         # customise title bar overrides tool window, so run this after tool window logic
         if flags & QtCore.Qt.CustomizeWindowHint:
 
-            show_title = flags & QtCore.Qt.WindowTitleHint
+            show_title_bar = flags & QtCore.Qt.WindowTitleHint
             show_minim = flags & QtCore.Qt.WindowMinimizeButtonHint
             show_maxim = flags & QtCore.Qt.WindowMaximizeButtonHint
             show_close = flags & QtCore.Qt.WindowCloseButtonHint
             show_sys_hint = flags & QtCore.Qt.WindowSystemMenuHint
 
-        self.title.setVisible(not full_screen and (show_close or show_maxim or show_minim or show_title or show_sys_hint))
+        self.title.setVisible(not full_screen and (show_close or show_maxim or show_minim or show_title_bar or show_sys_hint))
         self.title_text.setVisible(True)
         self.btn_minimize.setVisible(show_minim)
         self.btn_maximize.setVisible(show_maxim)
@@ -426,50 +448,50 @@ class FramelessWindow(QWidget):
                     self._move()
         return super().mousePressEvent(e)
 
-    def mouseDoubleClickEvent(self, e):
-        if self._verticalExpandedEnabled:
-            p = e.pos()
-
-            rect = self.rect()
-            rect.setX(self.rect().x() + self._margin)
-            rect.setY(self.rect().y() + self._margin)
-            rect.setWidth(self.rect().width() - self._margin * 2)
-            rect.setHeight(self.rect().height() - self._margin * 2)
-
-            y = p.y()
-
-            y1 = self.rect().y()
-            y2 = self.rect().height()
-
-            top = abs(y - y1) <= self._margin # far top
-            bottom = abs(y - (y2 + y1)) <= self._margin # far bottom
-
-            ag = QScreen().availableGeometry()
-
-            # fixme minor bug - resizing after expand can lead to inappropriate result when in comes to expanding again, it should be fixed
-            # vertical expanding when double-clicking either top or bottom edge
-            # back to normal
-            if self._verticalExpanded:
-                if top or bottom:
-                    self.move(self.x(), self._originalY)
-                    self.resize(self.width(), self._originalHeightBeforeExpand)
-                    self._verticalExpanded = False
-            # expand vertically
-            else:
-                if top or bottom:
-                    self._verticalExpanded = True
-                    min_size = self.minimumSize()
-                    max_size = self.maximumSize()
-                    geo = self.geometry()
-                    self._originalY = geo.y()
-                    self._originalHeightBeforeExpand = geo.height()
-                    geo.moveTop(0)
-                    self.setGeometry(geo)
-                    self.setFixedHeight(ag.height()-2)
-                    self.setMinimumSize(min_size)
-                    self.setMaximumSize(max_size)
-
-        return super().mouseDoubleClickEvent(e)
+    # def mouseDoubleClickEvent(self, e):  # todo test
+    #     if self._verticalExpandedEnabled:
+    #         p = e.pos()
+    #
+    #         rect = self.rect()
+    #         rect.setX(self.rect().x() + self._margin)
+    #         rect.setY(self.rect().y() + self._margin)
+    #         rect.setWidth(self.rect().width() - self._margin * 2)
+    #         rect.setHeight(self.rect().height() - self._margin * 2)
+    #
+    #         y = p.y()
+    #
+    #         y1 = self.rect().y()
+    #         y2 = self.rect().height()
+    #
+    #         top = abs(y - y1) <= self._margin # far top
+    #         bottom = abs(y - (y2 + y1)) <= self._margin # far bottom
+    #
+    #         ag = QtGui.QScreen().availableGeometry()
+    #
+    #         # fixme minor bug - resizing after expand can lead to inappropriate result when in comes to expanding again, it should be fixed
+    #         # vertical expanding when double-clicking either top or bottom edge
+    #         # back to normal
+    #         if self._verticalExpanded:
+    #             if top or bottom:
+    #                 self.move(self.x(), self._originalY)
+    #                 self.resize(self.width(), self._originalHeightBeforeExpand)
+    #                 self._verticalExpanded = False
+    #         # expand vertically
+    #         else:
+    #             if top or bottom:
+    #                 self._verticalExpanded = True
+    #                 min_size = self.minimumSize()
+    #                 max_size = self.maximumSize()
+    #                 geo = self.geometry()
+    #                 self._originalY = geo.y()
+    #                 self._originalHeightBeforeExpand = geo.height()
+    #                 geo.moveTop(0)
+    #                 self.setGeometry(geo)
+    #                 self.setFixedHeight(ag.height()-2)
+    #                 self.setMinimumSize(min_size)
+    #                 self.setMaximumSize(max_size)
+    #
+    #     return super().mouseDoubleClickEvent(e)
 
     def mouseMoveEvent(self, e):
         self._setCursorShapeForCurrentPoint(e.pos())
@@ -546,7 +568,7 @@ def wrap_widget_unreal(widget: QWidget) -> FramelessWindowUnreal:
 if __name__ == "__main__":
     import sys
     from PySide2 import QtWidgets
-    flags = Qt.Window | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowMinimizeButtonHint \
+    flags = Qt.Window | Qt.FramelessWindowHint
             #| Qt.WindowStaysOnTopHint works
     flags2 = flags
 
@@ -559,13 +581,13 @@ if __name__ == "__main__":
     w1.setWindowFlags(flags2)
     w1.show()
 
-    # create a second default qt window
-    w2 = QtWidgets.QMainWindow()
-    w2.setWindowTitle("Default Window")
-    w2.setWindowIcon(QtGui.QIcon("icon.png"))
-    w2.setWindowFlags(flags)
-    w2.setWindowFlags(flags2)
-    w2.show()
+    # # create a second default qt window
+    # w2 = QtWidgets.QMainWindow()
+    # w2.setWindowTitle("Default Window")
+    # w2.setWindowIcon(QtGui.QIcon("icon.png"))
+    # w2.setWindowFlags(flags)
+    # w2.setWindowFlags(flags2)
+    # w2.show()
 
 
     sys.exit(app.exec_())
