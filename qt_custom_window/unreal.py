@@ -1,7 +1,7 @@
 from pathlib import Path
-from darkbar.window import FramelessWindow
-from darkbar.titlebar import TitleBar
-from darkbar.qt_manager import QtGui, QtCore, QtWidgets
+from qt_custom_window.window import FramelessWindow
+from qt_custom_window.titlebar import TitleBar
+from qt_custom_window.qt_manager import QtGui, QtCore, QtWidgets
 QWidget = QtWidgets.QWidget
 
 

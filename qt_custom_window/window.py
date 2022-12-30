@@ -1,5 +1,5 @@
-from darkbar.titlebar import TitleBar
-from darkbar.qt_manager import QtCore, QtGui, QtWidgets
+from qt_custom_window.titlebar import TitleBar
+from qt_custom_window.qt_manager import QtCore, QtGui, QtWidgets
 Qt = QtCore.Qt
 QVBoxLayout = QtWidgets.QVBoxLayout
 QWidget = QtWidgets.QWidget

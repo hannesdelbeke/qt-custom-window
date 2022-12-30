@@ -1,4 +1,4 @@
-from darkbar.qt_manager import QtCore, QtWidgets
+from qt_custom_window.qt_manager import QtCore, QtWidgets
 Qt = QtCore.Qt
 QWidget = QtWidgets.QWidget
 QHBoxLayout = QtWidgets.QHBoxLayout

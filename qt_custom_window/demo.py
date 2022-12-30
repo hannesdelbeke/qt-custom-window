@@ -1,6 +1,6 @@
 import sys
-from darkbar.window import FramelessWindow
-from darkbar.qt_manager import QtGui, QtCore, QtWidgets
+from qt_custom_window.window import FramelessWindow
+from qt_custom_window.qt_manager import QtGui, QtCore, QtWidgets
 Qt = QtCore.Qt
 
 
