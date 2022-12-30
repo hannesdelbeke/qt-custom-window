@@ -24,7 +24,7 @@ class DarkBar(QWidget):
         self.layout = QHBoxLayout()
         self.title = QLabel()  # believe this is a dummy to store the icon layout
 
-        self.title.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
+        # self.title.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)  # better resize cursor handling but can't click buttons
 
 
         self.icon_layout = QHBoxLayout()
@@ -38,6 +38,7 @@ class DarkBar(QWidget):
         self.btn_restore = QPushButton("🗗")
         self.btn_restore.setVisible(False)
 
+        # self.title_text.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
         # self._style_buttons_svg()
 
         self._connect_buttons()
@@ -93,7 +94,7 @@ class DarkBar(QWidget):
 
         # style title
         self.title.setFixedHeight(height)
-        self.title.setAlignment(Qt.AlignCenter)
+        # self.title.setAlignment(Qt.AlignCenter)
         # set padding
 
         self.title.setStyleSheet(f"""background-color: {ue_grey};""")
@@ -123,21 +124,21 @@ class DarkBar(QWidget):
         return super().enterEvent(e)
 
     def close_parent(self):
-        self.parent.close()
+        self.parent().close()
 
     def maximize_parent(self):
         # modified this func to support going back to normal
-        if self.parent.windowState() & QtCore.Qt.WindowMaximized:
-            self.parent.showNormal()
+        if self.parent().windowState() & QtCore.Qt.WindowMaximized:
+            self.parent().showNormal()
             self.btn_maximize.setVisible(True)
             self.btn_restore.setVisible(False)
         else:
-            self.parent.showMaximized()
+            self.parent().showMaximized()
             self.btn_maximize.setVisible(False)
             self.btn_restore.setVisible(True)
 
     def minimize_parent(self):
-        self.parent.showMinimized()
+        self.parent().showMinimized()
 
     # def setWindowFlag() # this wont work correctly
         # TODO implement this
