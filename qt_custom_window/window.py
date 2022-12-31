@@ -125,6 +125,13 @@ class FramelessWindow(QWidget):
         # wrap widget in a frameless window
         self.setCentralWidget(widget)
 
+        flags = widget.windowFlags() | Qt.Window  # not sure why this qwindow/tool is needed,
+        # seems flags not transferred correctly     from original widget
+        self.setWindowFlags(flags)
+
+        self.setParent(widget.parent())
+        widget.setParent(self)
+
         # copy over settings from widget
         self.setWindowTitle(widget.windowTitle())
         self.setWindowIcon(widget.windowIcon())
