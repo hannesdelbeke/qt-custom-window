@@ -38,7 +38,7 @@ class TitleBar(QWidget):
 
         self.icon_layout = QHBoxLayout()
 
-        self.btn_icon = QPushButton("♥")
+        self.btn_icon = QPushButton()
         self.title_text = QLabel("   " + title)  # hack, add space instead of margin
         self.btn_close = QPushButton("🗙")
         self.btn_help = QPushButton("?")
