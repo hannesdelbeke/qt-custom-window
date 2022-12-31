@@ -26,6 +26,7 @@ class FramelessWindow(QWidget):
             title_bar: custom title bar instance, if None, use self.default_title_bar()
         """
         self.show_original_title_bar = False  # debug flag
+        self.frameless = False
 
         super().__init__(parent=parent, *args, **kwargs)
 
@@ -111,7 +112,10 @@ class FramelessWindow(QWidget):
                 flags ^= flag  # remove flag from flags
 
         if not self.show_original_title_bar:
-            flags |= QtCore.Qt.FramelessWindowHint #CustomizeWindowHint
+            if self.frameless:
+                flags |= QtCore.Qt.FramelessWindowHint
+            else:
+                flags |= QtCore.Qt.CustomizeWindowHint
 
         super().setWindowFlags(flags)
 
@@ -172,6 +176,9 @@ class FramelessWindow(QWidget):
         self._right = False
 
     def _setCursorShapeForCurrentPoint(self, p):
+        if not self.frameless:
+            return
+
         if self.isResizable():
             if self.isMaximized() or self.isFullScreen():
                 pass
@@ -226,6 +233,9 @@ class FramelessWindow(QWidget):
                 self._resizing = not self._resizing
 
     def mousePressEvent(self, e):
+        if not self.frameless:
+            return
+
         if e.button() == Qt.LeftButton:
             if self._resizing:
                 self._resize()
