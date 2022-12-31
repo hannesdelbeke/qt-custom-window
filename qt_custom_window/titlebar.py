@@ -96,9 +96,9 @@ class TitleBar(QWidget):
         self.icon_layout.setContentsMargins(0, 0, 0, 0)
 
         # style buttons
-        for btn in [self.btn_icon, self.btn_close, self.btn_minimize, self.btn_maximize, self.btn_restore]:
+        for btn in [self.btn_icon, self.btn_close, self.btn_minimize, self.btn_maximize, self.btn_restore, self.btn_help]:
             btn.setFixedSize(height, height)
-            btn.setStyleSheet(f"background-color: transparent; font-size: 14px; color: {ue_grey_white};")
+            btn.setStyleSheet(f"background-color: transparent; font-size: 14px; color: {ue_grey_white}; border: none")
             btn.setFlat(True)  # remove frame from buttons
 
         # style title
