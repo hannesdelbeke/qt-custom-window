@@ -1,7 +1,11 @@
 from pathlib import Path
 from qt_custom_window.window import FramelessWindow
 from qt_custom_window.titlebar import TitleBar
-from qt_custom_window.qt_manager import QtGui, QtCore, QtWidgets
+# from qt_custom_window.qt_manager import QtGui, QtCore, QtWidgets
+import qt_custom_window.qt_manager
+QtCore = qt_custom_window.qt_manager.QtCore
+QtGui = qt_custom_window.qt_manager.QtGui
+QtWidgets = qt_custom_window.qt_manager.QtWidgets
 QWidget = QtWidgets.QWidget
 
 

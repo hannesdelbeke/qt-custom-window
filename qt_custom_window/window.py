@@ -1,5 +1,10 @@
+import qt_custom_window.qt_manager
 from qt_custom_window.titlebar import TitleBar
-from qt_custom_window.qt_manager import QtCore, QtGui, QtWidgets
+# from qt_custom_window.qt_manager import QtCore, QtGui, QtWidgets
+import qt_custom_window.qt_manager
+QtCore = qt_custom_window.qt_manager.QtCore
+QtGui = qt_custom_window.qt_manager.QtGui
+QtWidgets = qt_custom_window.qt_manager.QtWidgets
 Qt = QtCore.Qt
 QVBoxLayout = QtWidgets.QVBoxLayout
 QWidget = QtWidgets.QWidget

@@ -1,4 +1,8 @@
-from qt_custom_window.qt_manager import QtCore, QtWidgets
+# from qt_custom_window.qt_manager import QtCore, QtWidgets
+import qt_custom_window.qt_manager
+QtCore = qt_custom_window.qt_manager.QtCore
+QtGui = qt_custom_window.qt_manager.QtGui
+QtWidgets = qt_custom_window.qt_manager.QtWidgets
 Qt = QtCore.Qt
 QWidget = QtWidgets.QWidget
 QHBoxLayout = QtWidgets.QHBoxLayout
