@@ -127,21 +127,21 @@ class FramelessWindow(QWidget):
     def wrap_widget(self, widget):
         """set central widget and copy over settings from widget"""
         # wrap widget in a frameless window
+
+        flags = widget.windowFlags() | Qt.Window
+        self.setParent(widget.parent())
+        # widget.setParent(self)
+
         self.setCentralWidget(widget)
 
-        flags = widget.windowFlags() | Qt.Window  # not sure why this qwindow/tool is needed,
-        # seems flags not transferred correctly     from original widget
-        self.setWindowFlags(flags)
-
-        self.setParent(widget.parent())
-        widget.setParent(self)
 
         # copy over settings from widget
         self.setWindowTitle(widget.windowTitle())
         self.setWindowIcon(widget.windowIcon())
-        self.setWindowFlags(widget.windowFlags())
+        # self.setWindowFlags(widget.windowFlags())
+        self.setWindowFlags(flags)
         self.resize(widget.size())
-        # self.move(widget.pos())
+        self.move(widget.pos())
 
     def showFullScreen(self):
         super().showFullScreen()
