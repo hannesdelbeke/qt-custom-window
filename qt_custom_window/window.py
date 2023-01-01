@@ -1,4 +1,5 @@
 import qt_custom_window.qt_manager
+import qt_custom_window.window
 from qt_custom_window.titlebar import TitleBar
 # from qt_custom_window.qt_manager import QtCore, QtGui, QtWidgets
 import qt_custom_window.qt_manager
@@ -133,20 +134,32 @@ class FramelessWindow(QWidget):
         """set central widget and copy over settings from widget"""
         # wrap widget in a frameless window
 
-        flags = widget.windowFlags() | Qt.Window
-        self.setParent(widget.parent())
+        # window = qt_custom_window.window.FramelessWindow()
+        # self.title_bar.height = 18
+        flags = widget.windowFlags()
+
+        self.centralWidget = widget
+        widget.setParent(self)
+        # self.setCentralWidget(widget)
+
+        # set flags after change parent/add to layout todo check out
+        self.setWindowFlags(flags | Qt.Window)
+
+        # # flags = widget.windowFlags() | Qt.Window
+        # flags = Qt.Window
+        # # if widget.parent():
+        # #     self.setParent()
         # widget.setParent(self)
-
-        self.setCentralWidget(widget)
-
-
-        # copy over settings from widget
-        self.setWindowTitle(widget.windowTitle())
-        self.setWindowIcon(widget.windowIcon())
-        # self.setWindowFlags(widget.windowFlags())
-        self.setWindowFlags(flags)
-        self.resize(widget.size())
-        self.move(widget.pos())
+        #
+        #
+        #
+        # # copy over settings from widget
+        # # self.setWindowTitle(widget.windowTitle())
+        # # self.setWindowIcon(widget.windowIcon())
+        # # self.setWindowFlags(widget.windowFlags())
+        # self.setWindowFlags(flags)
+        # # self.resize(widget.size())
+        # # self.move(widget.pos())
 
     def showFullScreen(self):
         super().showFullScreen()
