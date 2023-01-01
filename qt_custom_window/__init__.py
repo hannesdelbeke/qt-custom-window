@@ -8,10 +8,9 @@ Qt = QtCore.Qt
 QWidget = QtWidgets.QWidget
 
 
-def wrap_widget2(widget: QWidget) -> FramelessWindow:
+def wrap_widget(widget: QWidget, parent=None, **kwargs) -> FramelessWindow:
     """helper function to wrap a widget in a frameless window with a custom title bar"""
-
-    window = FramelessWindow()  # QWidget()  #
+    window = FramelessWindow(**kwargs)
     window.wrap_widget(widget)
     window.show()
     return window

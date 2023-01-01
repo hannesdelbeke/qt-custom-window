@@ -75,6 +75,11 @@ class TitleBar(QWidget):
     def height(self):
         return self._height
 
+    @height.setter
+    def height(self, value):
+        self._height = value
+        self._styling(value)
+
     def _connect_buttons(self):
         self.btn_close.clicked.connect(self.close_parent)
         self.btn_minimize.clicked.connect(self.minimize_parent)

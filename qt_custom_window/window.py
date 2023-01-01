@@ -18,7 +18,7 @@ class FramelessWindow(QWidget):
 
     default_title_bar = TitleBar
 
-    def __init__(self, parent=None, title="", title_bar=None, *args, **kwargs):
+    def __init__(self, parent=None, title="", title_bar=None, title_bar_height=35, *args, **kwargs):
         """
         Args:
             parent: parent widget
@@ -32,7 +32,7 @@ class FramelessWindow(QWidget):
 
         layout = QVBoxLayout()
         self.setLayout(layout)
-        self.title_bar = self._set_title_bar(title_bar, title)
+        self.title_bar = self._set_title_bar(title_bar, title, height=title_bar_height)
         self.content_layout = QVBoxLayout()
 
         layout.addWidget(self.title_bar)  # add title bar
@@ -52,9 +52,9 @@ class FramelessWindow(QWidget):
         self._initVal()
         self.setMouseTracking(True)
 
-    def _set_title_bar(self, title_bar, title):
+    def _set_title_bar(self, title_bar, title, *args, **kwargs):
         if not title_bar:
-            title_bar = self.default_title_bar(self, title=title)
+            title_bar = self.default_title_bar(self, title=title, *args, **kwargs)
         return title_bar
 
     def setCentralWidget(self, widget):  # noqa: use same name convention as qmainwindow
