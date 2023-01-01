@@ -12,5 +12,14 @@ def wrap_widget(widget: QWidget, parent=None, **kwargs) -> FramelessWindow:
     """helper function to wrap a widget in a frameless window with a custom title bar"""
     window = FramelessWindow(**kwargs)
     window.wrap_widget(widget)
-    window.show()
+
+    # set parent seems to change window flags ## todo check out
+    flags = widget.windowFlags()
+    if parent:
+        window.setParent(parent)
+    window.setWindowFlags(flags)
+
+    # window.setWindowFlags(QtCore.Qt.Window)
     return window
+
+# todo close blender when clicking x
