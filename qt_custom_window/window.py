@@ -27,6 +27,7 @@ class FramelessWindow(QWidget):
         """
         self.show_original_title_bar = False  # debug flag
         self.frameless = False
+        self.centralWidget = None
 
         super().__init__(parent=parent, *args, **kwargs)
 
@@ -58,11 +59,13 @@ class FramelessWindow(QWidget):
         return title_bar
 
     def setCentralWidget(self, widget):  # noqa: use same name convention as qmainwindow
+        self.centralWidget = widget
         self.content_layout.addWidget(widget)
         return widget
 
     def centralWidget(self):
-        return self.content_layout.itemAt(0).widget()
+        return self.centralWidget
+        # return self.content_layout.itemAt(0).widget()
 
     def setWindowTitle(self, title):
         self.title_bar.title_text.setText(title)
@@ -343,3 +346,12 @@ class FramelessWindow(QWidget):
         self._pressToMove = f
 
     # ============
+
+    def resizeEvent(self, e):
+        # todo change cnetral widget to func to match qt
+        size = self.size()
+        size.setHeight(size.height() - self.title_bar.height)  # self._margin * 2)
+        self.centralWidget.resize(size)
+        self.centralWidget.move(0, self.title_bar.height)
+        self.centralWidget.repaint()
+        return super().resizeEvent(e)
