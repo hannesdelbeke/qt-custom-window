@@ -31,7 +31,7 @@ class TitleBar(QWidget):
         self._height = height
 
         self.layout = QHBoxLayout()
-        self.title = QLabel()  # believe this is a dummy to store the icon layout
+        self.title = QWidget()  # believe this is a dummy to store the icon layout
 
         # self.title.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)  # better resize cursor handling but can't click buttons
 
@@ -103,7 +103,12 @@ class TitleBar(QWidget):
         # style buttons
         for btn in [self.btn_icon, self.btn_close, self.btn_minimize, self.btn_maximize, self.btn_restore, self.btn_help]:
             btn.setFixedSize(height, height)
-            btn.setStyleSheet(f"background-color: transparent; font-size: 14px; color: {ue_grey_white}; border: none")
+            btn.setStyleSheet(f"background-color: transparent; "
+                              f"font-size: 14px; "
+                              f"color: {ue_grey_white}; "
+                              "border: none;"
+                              "padding-top: 0px;"
+                              "text-align: center;")
             btn.setFlat(True)  # remove frame from buttons
 
         # style title

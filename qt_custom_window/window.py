@@ -45,6 +45,8 @@ class FramelessWindow(QWidget):
 
         # use CustomizeWindowHint when you want to support resizing
         self.layout().setContentsMargins(0, 0, 0, 0)
+        self.content_layout.setContentsMargins(0, 0, 0, 0)
+
         # otherwise use MSWindowsFixedSizeDialogHint
         # self.setWindowFlags(Qt.Tool | Qt.MSWindowsFixedSizeDialogHint)
         # self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
