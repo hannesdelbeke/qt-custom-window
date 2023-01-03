@@ -10,5 +10,4 @@ a customisable "frameless" window with move resize etc, no dependencies, and sup
 - use windowsflags to control the window just like in qt
 
 ## credits
-some code was used from https://github.com/yjg30737/pyqt-frameless-window
-added dev as author in commit history
+- used resize code from Jung Gyu Yoon [pyqt-frameless-window](https://github.com/yjg30737/pyqt-frameless-window) (added dev as commit author)
